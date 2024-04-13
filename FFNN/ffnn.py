@@ -20,8 +20,9 @@ def read_data(filepath: str) -> list[dict]:
 
 """
 Reads data file and returns a list of tensors for the neural network.
+The first tensor is the training data, and the last one are the labels.
 """
-def load_data(filepath: str) -> tf.Tensor:
+def load_data(filepath: str) -> (tf.Tensor, tf.Tensor):
     data = read_data(filepath)
     rows = np.zeros((len(data), len(data[0].keys()) + 3)) # + 3 For one-hot encoding
 
@@ -57,8 +58,43 @@ def load_data(filepath: str) -> tf.Tensor:
         yi += 1
         xi = 0
 
-    return tf.constant(rows)
+    return (tf.constant(rows[:, :-1]), tf.constant(rows[:, -1]))
 
 
-tensor_data = load_data("./data.csv")
-tf.print(tensor_data[0], summarize=-1)
+"""
+Returns the nerual network model to use.
+"""
+def create_model(learning_rate: float):
+    model = tf.keras.models.Sequential([
+        tf.keras.layers.Dense(8, activation="sigmoid"), # Make function create dynamic layers?
+        tf.keras.layers.Dense(6, activation="sigmoid"),
+        tf.keras.layers.Dense(2) # Output layer, need to call softmax manually
+    ]) 
+
+    loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+    model.compile(optimizer=tf.keras.optimizers.SGD(
+            learning_rate=learning_rate
+        ), 
+        loss=loss_fn, 
+        metrics=["accuracy"])
+
+    return model
+
+
+"""
+Feeds data and labels into the network for training
+"""
+def forward(model, data: tf.Tensor, labels: tf.Tensor, batch_size: int, epochs: int):
+    model.fit(data, labels, epochs=epochs, shuffle=True, validation_split=0.3, batch_size=batch_size)
+
+
+"""
+Program Entrypoint
+"""
+def main():
+    tensor_data = load_data("./data.csv")
+    model = create_model(0.01)
+    forward(model, tensor_data[0], tensor_data[1], 10, 10)
+
+
+main()
