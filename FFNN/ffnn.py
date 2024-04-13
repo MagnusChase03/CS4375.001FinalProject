@@ -21,7 +21,7 @@ def read_data(filepath: str) -> list[dict]:
 """
 Reads data file and returns a list of tensors for the neural network.
 """
-def load_data(filepath: str):
+def load_data(filepath: str) -> tf.Tensor:
     data = read_data(filepath)
     rows = np.zeros((len(data), len(data[0].keys()) + 3)) # + 3 For one-hot encoding
 
