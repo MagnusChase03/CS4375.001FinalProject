@@ -68,7 +68,7 @@ def create_model(learning_rate: float):
     model = tf.keras.models.Sequential([
         tf.keras.layers.Dense(8, activation="sigmoid"), # Make function create dynamic layers?
         tf.keras.layers.Dense(6, activation="sigmoid"),
-        tf.keras.layers.Dense(2) # Output layer, need to call softmax manually
+        tf.keras.layers.Dense(2) 
     ]) 
 
     loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
