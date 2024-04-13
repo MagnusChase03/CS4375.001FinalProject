@@ -85,7 +85,7 @@ def create_model(learning_rate: float):
 Feeds data and labels into the network for training
 """
 def forward(model, data: tf.Tensor, labels: tf.Tensor, batch_size: int, epochs: int):
-    model.fit(data, labels, epochs=epochs, shuffle=True, validation_split=0.3, batch_size=batch_size)
+    model.fit(x=data, y=labels, epochs=epochs, shuffle=True, validation_split=0.3, batch_size=batch_size)
 
 
 """
@@ -94,7 +94,7 @@ Program Entrypoint
 def main():
     tensor_data = load_data("./data.csv")
     model = create_model(0.01)
-    forward(model, tensor_data[0], tensor_data[1], 10, 10)
+    forward(model, tensor_data[0], tensor_data[1], 5, 10)
 
 
 main()
