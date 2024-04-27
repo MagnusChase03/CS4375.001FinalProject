@@ -1,6 +1,8 @@
 import tensorflow as tf
+from tensorflow.keras.callbacks import EarlyStopping
 import numpy as np
 import csv
+import matplotlib.pyplot as plt
 
 
 """
@@ -85,7 +87,22 @@ def create_model(learning_rate: float):
 Feeds data and labels into the network for training
 """
 def forward(model, data: tf.Tensor, labels: tf.Tensor, batch_size: int, epochs: int):
-    model.fit(x=data, y=labels, epochs=epochs, shuffle=True, validation_split=0.3, batch_size=batch_size)
+    early_stopping = EarlyStopping(monitor="val_loss", patience=5, verbose=1)
+    history = model.fit(x=data, y=labels, epochs=epochs, shuffle=True, validation_split=0.3, batch_size=batch_size, callbacks=[early_stopping])
+    return history
+
+
+"""
+Plots the loss function from training
+"""
+def plot_loss(history):
+    plt.plot(history.history['loss'])
+    plt.plot(history.history['val_loss'])
+    plt.title('Model loss')
+    plt.ylabel('Loss')
+    plt.xlabel('Epoch')
+    plt.legend(['Train', 'Validation'], loc='upper left')
+    plt.savefig('loss_plot.png')
 
 
 """
@@ -93,8 +110,9 @@ Program Entrypoint
 """
 def main():
     tensor_data = load_data("./data.csv")
-    model = create_model(0.01)
-    forward(model, tensor_data[0], tensor_data[1], 5, 10)
+    model = create_model(0.001)
+    history = forward(model, tensor_data[0], tensor_data[1], 3, 100)
+    plot_loss(history)
 
 
 main()
